@@ -1,0 +1,22 @@
+---
+title: 'Lab 9: Bootstrapping, nonlinear least squares, and customizing tables with
+  gt'
+author: "Katelin Seeto"
+date: "3/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(boot)
+library(gt)
+library(patchwork)
+library(broom)
+library(nlstools)
+```
+
+
+
