@@ -18,5 +18,70 @@ library(broom)
 library(nlstools)
 ```
 
+## Part 1: Fun, beautiful tables with `gt`
+
+We'll use the `LifeCycleSavings` built-in dataset. See `?LifeCycleSavings` for more information on the included variables, and in the Console run `View(LifeCycleSavings)` to see the data. 
+
+Simplify the data a bit to get the 5 countries with the lowest savings ratio:
+```{r}
+disp_income <- LifeCycleSavings %>% 
+  rownames_to_column() %>% 
+   arrange(dpi) %>% 
+  head(5) %>%
+    mutate(ddpi = ddpi / 100,
+         pop15 = pop15 / 100,
+         pop75 = pop75 / 100) # To make it a decimal (we'll convert to a percentage in the table for more practice)
+```
+
+`gt` is an awesome package that makes customizing tables relatively painless. See a bunch of options here: 
+https://gt.rstudio.com/reference/tab_options.html
+
+We'll make a custom table using the `gt` package with the following goals: 
+
+- Percent variables (ddpi, pop15 and pop75) should be in percent format
+- Per capita disposable income (dpi) should be as dollars
+- Color of dpi cells should change based on value
+
+Build this one level at a time to see changes (e.g., you should write the code and run before each additional pipe operator to see what the code does)
+
+```{r}
+disp_income %>% 
+  gt() %>% 
+  tab_header( # Adds an overall header
+    title = "Life cycle savings", # Add a title
+    subtitle = "5 countries with lowest per capita disposable income" # And a subtitle
+  ) %>% 
+  fmt_currency( # Reformat to currency notation...
+    columns = vars(dpi), # The values for the 'dpi' variable
+    decimals = 2 # Keeping 2 decimal places
+  ) %>% 
+  fmt_percent( # Reformat to percent notation...
+    columns = vars(pop15, pop75, ddpi), # The values in these columns
+    decimals = 1) %>% 
+  fmt_number(columns = vars(sr),# Format a number
+             decimals = 1) %>% 
+  tab_options(
+    table.width = pct(80) # Update table width
+  ) %>% 
+  tab_footnote( # Add a footnote
+    footnote = "Data averaged from 1970 - 1980",
+    location = cells_title()
+  ) %>% 
+  data_color( # Update cell colors...
+    columns = vars(dpi), # ...for mean_len column
+    colors = scales::col_numeric(
+      palette = c("orange", "red", "purple"), # Overboard colors! 
+      domain = c(120,190) # Scale endpoints (outside will be gray)
+  )
+  ) %>% 
+  cols_label( # Update column labels manually
+    sr = "Savings ratio",
+    pop15 = "Pop < 15yr",
+    pop75 = "Pop < 75yr",
+    dpi = "Disposable $ per capita",
+    ddpi = "Disposable percent"
+  )
+  
+```
 
 
